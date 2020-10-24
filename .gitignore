@@ -4,6 +4,7 @@
 
 # dataset
 ml/images/
+ml/train/
 
-# submit file
-ml/sub-*.csv
+# output
+ml/output/
