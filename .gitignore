@@ -1,0 +1,9 @@
+# tools
+.idea/
+.vscode/
+
+# dataset
+ml/images/
+
+# submit file
+ml/sub-*.csv
