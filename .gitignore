@@ -8,3 +8,12 @@ ml/train/
 
 # output
 ml/output/
+
+# logs
+ml/logs/
+
+# cache
+__pycache__/
+ml/preprocessors/__pycache__/
+ml/generator/__pycache__/
+*.py[cod]
