@@ -7,7 +7,7 @@ from preprocessors import AspectAwarePreprocessor
 from sklearn.model_selection import train_test_split
 
 # extracts from csv file
-train_labels = pd.read_csv('./train_labels.csv', header='infer')
+train_labels = pd.read_csv('../train_labels.csv', header='infer')
 # set
 train_set = ['./train/' + image for image in train_labels.image]
 label_set = [int(label) for label in train_labels.target]

@@ -4,7 +4,7 @@ import pandas as pd
 import progressbar
 
 # extracts from csv file
-train_labels = pd.read_csv('./train_labels.csv', header='infer')
+train_labels = pd.read_csv('../train_labels.csv', header='infer')
 
 # progress bar
 widgets = [
