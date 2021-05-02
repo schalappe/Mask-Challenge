@@ -1,7 +1,7 @@
 # Spot the Mask challenge
 
 <div align="center">
-    <img src = "https://pbs.twimg.com/media/EVyYt-IU8AALA3x.jpg" 
+    <img src = "https://pbs.twimg.com/media/EVyYt-IU8AALA3x.jpg"
      height = "500"
      width = "1000">
 </div>
@@ -31,7 +31,7 @@ The size of dataset is small so we needed to add more data for training and we u
 
 - Rotation
 - Zoom
-- Shear 
+- Shear
 - Width Shift
 - Heights Shift
 

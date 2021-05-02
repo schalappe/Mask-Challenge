@@ -3,17 +3,17 @@
 .vscode/
 
 # dataset
-ml/images/
-ml/train/
+data/
 
 # output
-ml/output/
+models/
 
-# logs
-ml/logs/
+# cache
+.mypy_cache/
+
+# virtual environment
+venv/
 
 # cache
 __pycache__/
-ml/preprocessors/__pycache__/
-ml/generator/__pycache__/
 *.py[cod]
