@@ -1,35 +1,54 @@
 # -*- coding: utf-8 -*-
 import tensorflow as tf
-from generator import HDF5DatasetGenerator
-from preprocessors import ImageToArrayPreprocessor
-from preprocessors import PatchPreprocessor
-from preprocessors import SimplePreprocessor
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+from ml.config import FEATURES_PATH
+from ml.config import LOGS_PATH
+from ml.config import MODEL_PATH
+from ml.generator import DatasetGenerator
+from ml.preprocessors import ImageToArrayPreprocessor
+from ml.preprocessors import PatchPreprocessor
+from ml.preprocessors import SimplePreprocessor
 
 # data augmentation
-aug = ImageDataGenerator(
+aug = tf.keras.preprocessing.image.ImageDataGenerator(
     rotation_range=20, zoom_range=0.15,
     width_shift_range=0.2, height_shift_range=0.2,
     shear_range=0.15, fill_mode="nearest"
 )
+
 # initialization preprocessors
 sp = SimplePreprocessor(224, 224)
 pp = PatchPreprocessor(224, 224)
 iap = ImageToArrayPreprocessor()
 
 # ############ WARM UP #############
+
 # initialize the number of epochs to train for and batch size
 LR = 1e-2
 BS = 32
+OUTPUT_SHAPE = ((None, 224, 224, 3), (None,))
+
 # data generator
-trainGen = HDF5DatasetGenerator(
-    './output/train_set.hdf5', BS, aug=aug,
+train_generator = DatasetGenerator(
+    FEATURES_PATH + 'train_set.hdf5', BS, aug=aug,
     preprocessors=[pp, iap]
 )
-valGen = HDF5DatasetGenerator(
-    './output/val_set.hdf5', BS,
+train_set = tf.data.Dataset.from_generator(
+    train_generator.generator,
+    output_types=(tf.int64, tf.int64),
+    output_shapes=OUTPUT_SHAPE
+).prefetch(tf.data.AUTOTUNE)
+
+test_generator = DatasetGenerator(
+    FEATURES_PATH + 'test_set.hdf5', BS,
     preprocessors=[sp, iap]
 )
+test_set = tf.data.Dataset.from_generator(
+    test_generator.generator,
+    output_types=(tf.int64, tf.int64),
+    output_shapes=OUTPUT_SHAPE
+).prefetch(tf.data.AUTOTUNE)
+
 # construct our model
 print("[INFO]: Create model")
 head = tf.keras.applications.NASNetMobile(
@@ -53,7 +72,7 @@ model.compile(
 # callbacks
 callbacks = [
     tf.keras.callbacks.TensorBoard(
-        log_dir='./logs/nasnet/',
+        log_dir=LOGS_PATH+'nasnet/',
         profile_batch=0
     )
 ]
@@ -61,16 +80,11 @@ callbacks = [
 # train the head of the network
 print("[INFO] training: warm up ...")
 H = model.fit(
-    trainGen.generator(),
-    steps_per_epoch=trainGen.numImages // BS,
-    validation_data=valGen.generator(),
-    validation_steps=valGen.numImages // BS,
+    train_set,
+    validation_data=test_set,
     epochs=15,
-    callbacks=callbacks, verbose=2
+    callbacks=callbacks
 )
-
-trainGen.close()
-valGen.close()
 
 # ############ FINE TURN #############
 # unfreeze layers
@@ -83,24 +97,14 @@ model.compile(
     optimizer=optimizer, loss="binary_crossentropy", metrics=["accuracy"]
 )
 
-# data generator
-trainGen = HDF5DatasetGenerator(
-    './output/train_set.hdf5', BS, aug=aug,
-    preprocessors=[pp, iap]
-)
-valGen = HDF5DatasetGenerator(
-    './output/val_set.hdf5', BS,
-    preprocessors=[sp, iap]
-)
-
 # callbacks
 callbacks = [
     tf.keras.callbacks.TensorBoard(
-        log_dir='./logs/nasnet-fine/',
+        log_dir=LOGS_PATH+'nasnet-fine/',
         profile_batch=0
     ),
     tf.keras.callbacks.ModelCheckpoint(
-        './output/best_nasnet.h5', monitor='val_loss',
+        MODEL_PATH+'best_nasnet.h5', monitor='val_loss',
         mode='min', verbose=1,
         save_best_only=True, save_weights_only=False
     )
@@ -109,13 +113,11 @@ callbacks = [
 # train the head of the network
 print("[INFO] training: fine tune...")
 H = model.fit(
-    trainGen.generator(),
-    steps_per_epoch=trainGen.numImages // BS,
-    validation_data=valGen.generator(),
-    validation_steps=valGen.numImages // BS,
+    train_set,
+    validation_data=test_set,
     epochs=25,
-    callbacks=callbacks, verbose=2
+    callbacks=callbacks
 )
 
-trainGen.close()
-valGen.close()
+train_generator.close()
+test_generator.close()
