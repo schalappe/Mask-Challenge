@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import cv2
-from ml.utils import is_array_class
-from numpy import ndarray
 import imutils
+from numpy import ndarray
+
+from ml.utils import is_array
 
 
 class AspectAwarePreprocessor:
@@ -23,7 +24,6 @@ class AspectAwarePreprocessor:
         self.height = height
         self.inter = inter
 
-    @is_array_class
     def preprocess(self, image: ndarray) -> ndarray:
         """
         Resize an image
@@ -33,6 +33,7 @@ class AspectAwarePreprocessor:
         Returns:
             (ndarray): new image
         """
+        image = is_array(image)
         # grab the dimensions of the image and then initialize
         # the deltas to use when cropping
         (h, w) = image.shape[:2]

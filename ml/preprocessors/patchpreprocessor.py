@@ -1,15 +1,36 @@
 # -*- coding: utf-8 -*-
+from numpy import ndarray
 from sklearn.feature_extraction.image import extract_patches_2d
+
+from ml.utils import is_array
 
 
 class PatchPreprocessor:
-    def __init__(self, width, height):
+    """
+    Extract randomly a part of image
+    """
+    def __init__(self, width: int, height: int) -> None:
+        """
+        Initialization
+        Args:
+            width (int): width of new image
+            height (int): height of new image
+        """
         # width and height
         self.width = width
         self.height = height
 
-    def preprocess(self, image):
+    def preprocess(self, image: ndarray):
+        """
+        Randomly extract a part of image
+        Args:
+            image (ndarray): Image to process
+
+        Returns:
+            (Any): new image
+        """
         # extract a random crop from the image with the target width
         # and height
+        image = is_array(image)
         return extract_patches_2d(image, (self.height, self.width),
                                   max_patches=1)[0]
