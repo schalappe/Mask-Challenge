@@ -35,7 +35,7 @@ train_generator = DatasetGenerator(
 )
 train_set = tf.data.Dataset.from_generator(
     train_generator.generator,
-    output_types=(tf.int64, tf.int64),
+    output_types=(tf.float64, tf.uint8),
     output_shapes=OUTPUT_SHAPE
 ).prefetch(tf.data.AUTOTUNE)
 
@@ -45,7 +45,7 @@ test_generator = DatasetGenerator(
 )
 test_set = tf.data.Dataset.from_generator(
     test_generator.generator,
-    output_types=(tf.int64, tf.int64),
+    output_types=(tf.float64, tf.uint8),
     output_shapes=OUTPUT_SHAPE
 ).prefetch(tf.data.AUTOTUNE)
 
@@ -86,6 +86,10 @@ H = model.fit(
     callbacks=callbacks
 )
 
+# close
+train_generator.close()
+test_generator.close()
+
 # ############ FINE TURN #############
 # unfreeze layers
 for layer in model.layers[:-4]:
@@ -110,6 +114,28 @@ callbacks = [
     )
 ]
 
+# data generators
+# data generator
+train_generator = DatasetGenerator(
+    FEATURES_PATH + 'train_set.hdf5', BS, aug=aug,
+    preprocessors=[pp, iap]
+)
+train_set = tf.data.Dataset.from_generator(
+    train_generator.generator,
+    output_types=(tf.float64, tf.uint8),
+    output_shapes=OUTPUT_SHAPE
+).prefetch(tf.data.AUTOTUNE)
+
+test_generator = DatasetGenerator(
+    FEATURES_PATH + 'test_set.hdf5', BS,
+    preprocessors=[sp, iap]
+)
+test_set = tf.data.Dataset.from_generator(
+    test_generator.generator,
+    output_types=(tf.float64, tf.uint8),
+    output_shapes=OUTPUT_SHAPE
+).prefetch(tf.data.AUTOTUNE)
+
 # train the head of the network
 print("[INFO] training: fine tune...")
 H = model.fit(
@@ -119,5 +145,6 @@ H = model.fit(
     callbacks=callbacks
 )
 
+# close
 train_generator.close()
 test_generator.close()
