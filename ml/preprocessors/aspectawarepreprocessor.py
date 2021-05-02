@@ -10,6 +10,7 @@ class AspectAwarePreprocessor:
     """
     Class used to resize image while keeping the ratio
     """
+
     def __init__(self, width: int, height: int, inter: int = cv2.INTER_AREA) -> None:
         """
         Initialization
@@ -48,7 +49,6 @@ class AspectAwarePreprocessor:
             dW = int((image.shape[1] - self.width) / 2.0)
 
         (h, w) = image.shape[:2]
-        image = image[dH:h - dH, dW:w - dW]
+        image = image[dH : h - dH, dW : w - dW]
 
-        return cv2.resize(image, (self.width, self.height),
-                          interpolation=self.inter)
+        return cv2.resize(image, (self.width, self.height), interpolation=self.inter)

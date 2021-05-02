@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+    Script used to create a submit file
+"""
 import csv
 import os
 
@@ -20,10 +23,10 @@ print("[INFO]: {} images".format(len(imagePaths)))
 
 # load the Model
 print("[INFO]: loading model ...")
-model = tf.keras.models.load_model(MODEL_PATH + 'best_nasnet.h5')
+model = tf.keras.models.load_model(MODEL_PATH + "best_nasnet.h5")
 
 # create submit file
-with open(SUBMIT_PATH + 'sub-nasnet-best.csv', "w") as submit:
+with open(SUBMIT_PATH + "sub-nasnet-best.csv", "w") as submit:
     writer = csv.writer(submit)
     writer.writerow(["image", "target"])
 
@@ -44,7 +47,7 @@ for image_path in tqdm(imagePaths, ncols=100, desc="Prediction ..."):
     pred = model.predict(image)[0][0]
 
     # write on submit file
-    with open(SUBMIT_PATH + 'sub-nasnet-best.csv', "a+", newline='') as submit:
+    with open(SUBMIT_PATH + "sub-nasnet-best.csv", "a+", newline="") as submit:
         writer = csv.writer(submit)
         writer.writerow([str(image_path.split(os.path.sep)[-1]), str(pred)])
 

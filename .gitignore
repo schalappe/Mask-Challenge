@@ -8,6 +8,9 @@ data/
 # output
 models/
 
+# cache
+.mypy_cache/
+
 # virtual environment
 venv/
 

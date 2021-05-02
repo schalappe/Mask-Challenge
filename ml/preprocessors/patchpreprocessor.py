@@ -9,6 +9,7 @@ class PatchPreprocessor:
     """
     Extract randomly a part of image
     """
+
     def __init__(self, width: int, height: int) -> None:
         """
         Initialization
@@ -20,17 +21,16 @@ class PatchPreprocessor:
         self.width = width
         self.height = height
 
-    def preprocess(self, image: ndarray):
+    def preprocess(self, image: ndarray) -> ndarray:
         """
         Randomly extract a part of image
         Args:
             image (ndarray): Image to process
 
         Returns:
-            (Any): new image
+            (ndarray): new image
         """
         # extract a random crop from the image with the target width
         # and height
         image = is_array(image)
-        return extract_patches_2d(image, (self.height, self.width),
-                                  max_patches=1)[0]
+        return extract_patches_2d(image, (self.height, self.width), max_patches=1)[0]

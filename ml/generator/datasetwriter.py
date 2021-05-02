@@ -8,6 +8,7 @@ class DatasetWriter:
     """
     Store data into h5py dataset
     """
+
     def __init__(self, dims: tuple, output_path: str, buf_size: int = 1000) -> None:
         """
         Initialization
@@ -20,8 +21,7 @@ class DatasetWriter:
         # check if the output path exists
         if os.path.exists(output_path):
             raise ValueError(
-                "The output path already exists and cannot be "
-                "overwritten. Manually delete it before continuing."
+                "The output path already exists and cannot be " "overwritten. Manually delete it before continuing."
             )
 
         # store image/feature and class label
@@ -30,8 +30,8 @@ class DatasetWriter:
         self.labels = self.db.create_dataset("labels", (dims[0],), dtype="int")
 
         # buffer size and initialization
-        self.bufSize = buf_size
-        self.buffer = {"data": [], "labels": []}
+        self.buf_size = buf_size
+        self.buffer = {"data": [], "labels": []}  # type: dict
         self.idx = 0
 
     def add(self, rows: list, labels: list) -> None:
@@ -47,7 +47,7 @@ class DatasetWriter:
         self.buffer["labels"].extend(labels)
 
         # check if the buffer needs to be flushed to disk
-        if len(self.buffer["data"]) >= self.bufSize:
+        if len(self.buffer["data"]) >= self.buf_size:
             self.flush()
 
     def flush(self) -> None:
@@ -56,8 +56,8 @@ class DatasetWriter:
         """
         # write the buffer to disk then reset the buffer
         i = self.idx + len(self.buffer["data"])
-        self.data[self.idx:i] = self.buffer["data"]
-        self.labels[self.idx:i] = self.buffer["labels"]
+        self.data[self.idx : i] = self.buffer["data"]
+        self.labels[self.idx : i] = self.buffer["labels"]
         self.idx = i
         self.buffer = {"data": [], "labels": []}
 
