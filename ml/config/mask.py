@@ -11,5 +11,6 @@ IMAGES_PATH = DATA_PATH + "images/"
 TRAIN_PATH = DATA_PATH + "train/"
 SUBMIT_PATH = DATA_PATH + "submit/"
 LOGS_PATH = DATA_PATH + "logs/"
+FEATURES_PATH = DATA_PATH + "features/"
 
 INPUT_CSV = DATA_PATH + "train_labels.csv"
